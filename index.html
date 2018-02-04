@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+    <head>
+        <title>yandex geocode</title>
+    <meta http-equiv='x-ua-compatible' content='IE=edge' />
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+    <style>
+       .layer1 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        }
+    </style>
+    <script src='https://api-maps.yandex.ru/2.1/?lang=ru_RU' type='text/javascript'></script>
+        <script type='text/javascript'>           
+            var Map;
+            var myObjects;
+            ymaps.ready(init);
+            
+           function init()
+            {
+                Map = new ymaps.Map('map', { center: [55.76, 37.64], zoom: 7 });
+                myObjects = ymaps.geoQuery(Map.geoObjects);
+            }
+            
+           function AddGeoObject(index, encodingtxt)
+           {              
+               var geoObject = myObjects.get(index);
+
+               if (geoObject != undefined && encodingtxt == "")
+               {
+                   geoObject.options.set('visible', false);
+                   SetupMap();
+                   return;
+               }
+
+               var Geocoder = ymaps.geocode(encodingtxt, { results: 1 });
+                            
+                Geocoder.then(function (res)
+                {
+                    var firstGeoObject = res.geoObjects.get(0),                    
+                    coords = firstGeoObject.geometry.getCoordinates(),
+                    // Область видимости геообъекта.
+                    bounds = firstGeoObject.properties.get('boundedBy');
+
+                    // Настраиваем геообъект: Получаем строку с адресом и выводим в иконке геообъекта.
+                    firstGeoObject.options.set('preset', 'islands#darkBlueDotIconWithCaption');                   
+                    firstGeoObject.options.set('visible', true);
+                    firstGeoObject.properties.set('iconCaption', firstGeoObject.getAddressLine());
+                    
+                    // Добавляем новый на карту или замещаем найденным геообъектом коллекцию
+                    if (geoObject != undefined)
+                      Map.geoObjects.splice(index, 1, firstGeoObject);
+                    else
+                      Map.geoObjects.add(firstGeoObject);
+
+                    SetupMap();
+                   
+                },
+                function (err)
+                {
+                    alert('Произошла ошибка геокодирования.'); 
+                }
+                          );
+                
+           }
+           
+           function SetupMap()
+           {
+               //Масштабируем карту на области видимости всех видимых объектов
+               myObjects = ymaps.geoQuery(Map.geoObjects);
+               var geoVisibleResult = myObjects.search('options.visible = true');
+               //если геообект один то установим вручную центр и масштаб = 15
+               if (geoVisibleResult.getLength() == 1)                   
+                   Map.setCenter(geoVisibleResult.get(0).geometry.getCoordinates(), 15);               
+               else
+                   Map.setBounds(geoVisibleResult.getBounds());
+           }
+
+        </script>
+    </head>
+        <body>
+            <div id='map' class='layer1'></div>   
+        </body>
+</html>

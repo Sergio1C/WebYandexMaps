@@ -43,17 +43,18 @@
                     coords = firstGeoObject.geometry.getCoordinates(),
                     // Область видимости геообъекта.
                     bounds = firstGeoObject.properties.get('boundedBy');
-
                     // Настраиваем геообъект: Получаем строку с адресом и выводим в иконке геообъекта.
                     firstGeoObject.options.set('preset', 'islands#darkBlueDotIconWithCaption');                   
                     firstGeoObject.options.set('visible', true);
                     firstGeoObject.properties.set('iconCaption', firstGeoObject.getAddressLine());
-                    
+                    firstGeoObject.properties.set('id', index);
                     // Добавляем новый на карту или замещаем найденным геообъектом коллекцию
                     if (geoObject != undefined)
                       Map.geoObjects.splice(index, 1, firstGeoObject);
                     else
                       Map.geoObjects.add(firstGeoObject);
+
+                    UpdateIcon(index);
 
                     SetupMap();
                    
@@ -65,7 +66,7 @@
                           );
                 
            }
-           
+                       
            function SetupMap()
            {
                //Масштабируем карту на области видимости всех видимых объектов
@@ -77,7 +78,18 @@
                else
                    Map.setBounds(geoVisibleResult.getBounds());
            }
-
+           
+           function UpdateIcon(index)
+           {
+               Map.geoObjects.each(function (obj) {
+                   var indexObj = obj.properties.get('id');
+                   if (indexObj == index)
+                       obj.options.set("iconColor", "red");
+                   else
+                       obj.options.unset("iconColor");
+               })
+           }
+    
         </script>
     </head>
         <body>

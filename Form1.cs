@@ -52,6 +52,12 @@ namespace WebYandexMaps
             UpdateGeoObjects(dataGridView.CurrentRow.Index);
         }
 
+        private void dataGridView_SelectionChanged(object sender, System.EventArgs e)
+        {
+            int index = dataGridView.CurrentRow.Index;
+            webBrowser.Document.InvokeScript("UpdateIcon", new object[] { index });
+        }
+
         //webBrowser
         private void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {            
@@ -61,6 +67,7 @@ namespace WebYandexMaps
             }
         }
 
+       
     }
 }
 

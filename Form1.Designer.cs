@@ -67,6 +67,7 @@
             this.dataGridView.Size = new System.Drawing.Size(262, 508);
             this.dataGridView.TabIndex = 2;
             this.dataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_CellValueChanged);
+            this.dataGridView.SelectionChanged += new System.EventHandler(this.dataGridView_SelectionChanged);
             // 
             // addressDataGridViewTextBoxColumn
             // 
